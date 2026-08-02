@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: mart_repository_kpi
+    columns:
+      - name: metric_date
+        tests:
+          - not_null
+      - name: repository_name
+        tests:
+          - not_null
+      - name: popularity_score
+        tests:
+          - not_null

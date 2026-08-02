@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: stg_github_repository_snapshot
+    columns:
+      - name: ingested_at
+        tests:
+          - not_null
+      - name: repository_name
+        tests:
+          - not_null

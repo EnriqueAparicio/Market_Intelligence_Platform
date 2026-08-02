@@ -1,0 +1,19 @@
+name: market_intelligence_dbt
+version: 1.0.0
+profile: market_intelligence_snowflake
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
+analysis-paths: ["analysis"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+
+models:
+  market_intelligence_dbt:
+    +materialized: view
+    staging:
+      +schema: STAGING
+    marts:
+      +materialized: table
+      +schema: MART

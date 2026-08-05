@@ -1,69 +1,61 @@
 # Market Intelligence Platform
 
-Production-style foundation for market intelligence and analytics automation.
+Base del proyecto para inteligencia de mercado y automatización de analítica.
 
-## Repository Scope
+## Alcance del repositorio
 
-This repository contains core application logic, shared utilities, environment configuration, and validation checks.
+Este repositorio concentra la lógica principal del proyecto, utilidades compartidas, configuración y validaciones.
 
-Airflow orchestration is managed in a separate repository.
+El orquestado de Airflow se mantiene en un repositorio aparte.
 
-The primary integration handled in this repository is the connection between application code, GitHub-based delivery, and Snowflake as the analytics warehouse.
+La integración principal que vive aquí es la relación entre el código del repositorio, GitHub como control de versiones y Snowflake como destino de datos y analítica.
 
-## Initial Structure
+## Estructura inicial
 
-- `src/market_intelligence_platform/`: main Python package.
-- `tests/`: smoke tests and basic validations.
-- `.github/workflows/`: CI workflows.
-- `dbt/`: transformation layer and data model definitions.
-- `sql/snowflake/`: repeatable storage bootstrap SQL.
+- `src/market_intelligence_platform/`: paquete principal de Python.
+- `tests/`: tests de humo y validaciones básicas.
+- `.github/workflows/`: pipeline de CI.
+- `src/market_intelligence_platform/`: configuración y contratos de integración.
 
-## Local Setup
+## Arranque local
 
 ```bash
 pip install -r requirements.txt
 pytest
 ```
 
-## Environment Variables
+## Variables de entorno
 
-Base variables are defined in `.env.example`.
+Las variables base están en `.env.example`.
 
 - GitHub: `GITHUB_OWNER`, `GITHUB_REPOSITORY`, `GITHUB_BRANCH`
 - Snowflake: `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PASSWORD`, `SNOWFLAKE_ROLE`, `SNOWFLAKE_WAREHOUSE`, `SNOWFLAKE_DATABASE`, `SNOWFLAKE_SCHEMA`
 
-## Project Snowflake Storage
+## Snowflake storage del proyecto
 
-Provisioned structure:
+Estructura provisionada:
 
-- Database: `MARKET_INTELLIGENCE_DB`
+- Base de datos: `MARKET_INTELLIGENCE_DB`
 - Schemas: `CORE`, `RAW`, `STAGING`, `MART`
-- Initial ingestion stage: `MARKET_INTELLIGENCE_DB.RAW.GITHUB_STAGE`
-- Base tables:
+- Stage de ingesta inicial: `MARKET_INTELLIGENCE_DB.RAW.GITHUB_STAGE`
+- Tablas base:
 	- `CORE.PROJECT_RUN_AUDIT`
 	- `RAW.GITHUB_REPOSITORY_SNAPSHOT`
 	- `STAGING.REPOSITORY_DAILY_METRICS`
 	- `MART.REPOSITORY_KPI`
 
-Reproducible SQL is available in `sql/snowflake/bootstrap_storage.sql`.
+SQL reproducible en `sql/snowflake/bootstrap_storage.sql`.
 
-## Git Branching Strategy
+## Capa dbt incluida
 
-- `main`: stable branch for production-ready code.
-- `dev`: integration branch for active development.
+El repositorio ya incluye el proyecto dbt para transformar datos desde RAW a STAGING y MART.
 
-Recommended flow: open pull requests from `dev` into `main` after tests and reviews pass.
-
-## Included dbt Layer
-
-The repository already includes a dbt project to transform data from RAW to STAGING and MART.
-
-- dbt project: `dbt/dbt_project.yml`
+- Proyecto dbt: `dbt/dbt_project.yml`
 - Source RAW: `dbt/models/sources/sources.yml`
-- STAGING model: `dbt/models/staging/stg_github_repository_snapshot.sql`
-- MART model: `dbt/models/marts/mart_repository_kpi.sql`
+- Modelo STAGING: `dbt/models/staging/stg_github_repository_snapshot.sql`
+- Modelo MART: `dbt/models/marts/mart_repository_kpi.sql`
 
-Base commands:
+Comandos base:
 
 ```bash
 pip install -r requirements.txt
@@ -72,8 +64,8 @@ dbt run --project-dir dbt --profiles-dir dbt
 dbt test --project-dir dbt --profiles-dir dbt
 ```
 
-## Documentation
+## Documentacion
 
-Complete project documentation is available in `docs/PROJECT_DOCUMENTATION.md`.
+Documentacion completa del proyecto en `docs/PROJECT_DOCUMENTATION.md`.
 
 

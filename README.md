@@ -1,61 +1,71 @@
 # Market Intelligence Platform
 
-Base del proyecto para inteligencia de mercado y automatización de analítica.
+Portfolio-ready foundation for market intelligence and analytics automation.
 
-## Alcance del repositorio
+## Overview
 
-Este repositorio concentra la lógica principal del proyecto, utilidades compartidas, configuración y validaciones.
+This repository combines Python, dbt, Snowflake, and GitHub-based CI to demonstrate a production-style analytics workflow.
 
-El orquestado de Airflow se mantiene en un repositorio aparte.
+Airflow orchestration is handled in a separate repository so the transformation and application layers remain focused here.
 
-La integración principal que vive aquí es la relación entre el código del repositorio, GitHub como control de versiones y Snowflake como destino de datos y analítica.
+The main objective is to keep the codebase easy to review, easy to validate, and suitable for a company-facing portfolio.
 
-## Estructura inicial
+## Repository Layout
 
-- `src/market_intelligence_platform/`: paquete principal de Python.
-- `tests/`: tests de humo y validaciones básicas.
-- `.github/workflows/`: pipeline de CI.
-- `src/market_intelligence_platform/`: configuración y contratos de integración.
+- `src/market_intelligence_platform/`: main Python package and integration contracts.
+- `tests/`: smoke tests and basic validations.
+- `.github/workflows/`: GitHub Actions CI pipeline.
+- `dbt/`: dbt project for transformations.
+- `sql/snowflake/`: reproducible Snowflake bootstrap SQL.
+- `docs/`: project and workflow documentation.
 
-## Arranque local
+## Architecture
+
+1. GitHub manages source control, reviews, and CI.
+2. Python stores environment contracts and readiness checks.
+3. Snowflake stores the warehouse, stage, and base tables.
+4. dbt transforms RAW data into STAGING and MART layers.
+
+## Local Setup
 
 ```bash
 pip install -r requirements.txt
 pytest
 ```
 
-## Variables de entorno
+## Environment Variables
 
-Las variables base están en `.env.example`.
+Base variables are defined in `.env.example`.
 
 - GitHub: `GITHUB_OWNER`, `GITHUB_REPOSITORY`, `GITHUB_BRANCH`
 - Snowflake: `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PASSWORD`, `SNOWFLAKE_ROLE`, `SNOWFLAKE_WAREHOUSE`, `SNOWFLAKE_DATABASE`, `SNOWFLAKE_SCHEMA`
 
-## Snowflake storage del proyecto
+## Project Snowflake Storage
 
-Estructura provisionada:
+Provisioned structure:
 
-- Base de datos: `MARKET_INTELLIGENCE_DB`
+- Database: `MARKET_INTELLIGENCE_DB`
 - Schemas: `CORE`, `RAW`, `STAGING`, `MART`
-- Stage de ingesta inicial: `MARKET_INTELLIGENCE_DB.RAW.GITHUB_STAGE`
-- Tablas base:
-	- `CORE.PROJECT_RUN_AUDIT`
-	- `RAW.GITHUB_REPOSITORY_SNAPSHOT`
-	- `STAGING.REPOSITORY_DAILY_METRICS`
-	- `MART.REPOSITORY_KPI`
+- Initial ingestion stage: `MARKET_INTELLIGENCE_DB.RAW.GITHUB_STAGE`
+- Base tables:
 
-SQL reproducible en `sql/snowflake/bootstrap_storage.sql`.
+  - `CORE.PROJECT_RUN_AUDIT`
+  - `RAW.GITHUB_REPOSITORY_SNAPSHOT`
+  - `STAGING.REPOSITORY_DAILY_METRICS`
+  - `MART.REPOSITORY_KPI`
 
-## Capa dbt incluida
+Reproducible SQL is available in `sql/snowflake/bootstrap_storage.sql`.
 
-El repositorio ya incluye el proyecto dbt para transformar datos desde RAW a STAGING y MART.
+## Included dbt Layer
 
-- Proyecto dbt: `dbt/dbt_project.yml`
+This repository already includes a dbt project to transform data from RAW into STAGING and MART.
+
+- dbt project: `dbt/dbt_project.yml`
 - Source RAW: `dbt/models/sources/sources.yml`
-- Modelo STAGING: `dbt/models/staging/stg_github_repository_snapshot.sql`
-- Modelo MART: `dbt/models/marts/mart_repository_kpi.sql`
+- STAGING model: `dbt/models/staging/stg_github_repository_snapshot.sql`
+- MART model: `dbt/models/marts/mart_repository_kpi.sql`
 
-Comandos base:
+Base commands:
 
 ```bash
 pip install -r requirements.txt
@@ -64,8 +74,14 @@ dbt run --project-dir dbt --profiles-dir dbt
 dbt test --project-dir dbt --profiles-dir dbt
 ```
 
-## Documentacion
+## GitHub Workflow Guide
 
-Documentacion completa del proyecto en `docs/PROJECT_DOCUMENTATION.md`.
+The branch strategy, GitHub rulesets, and command workflow are documented in:
+
+- [docs/github/BRANCH_RULESETS_GUIDE.md](docs/github/BRANCH_RULESETS_GUIDE.md)
+
+## Documentation
+
+Complete project documentation is available in `docs/PROJECT_DOCUMENTATION.md`.
 
 

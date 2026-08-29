@@ -6,9 +6,8 @@ Store guide screenshots in this folder and reference them from:
 
 Recommended naming pattern:
 
-- `01-ruleset-status-check-error.png`
-- `02-add-target-main.png`
-- `03-add-target-dev.png`
-- `04-required-checks-selection.png`
+- `01-status-check-error.png`
+- `02-main-branch-target.png`
+- `03-feature-branch-push-example.png`
 
 Use lowercase names with hyphens and a numeric prefix to keep images ordered.

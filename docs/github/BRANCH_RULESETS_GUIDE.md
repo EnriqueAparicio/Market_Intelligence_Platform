@@ -1,72 +1,110 @@
 # GitHub Branch Rulesets Guide
 
-This guide explains how to configure branch rules in GitHub, especially for the dev branch.
+This guide shows how I structure, protect, and operate the repository branches for a portfolio project.
 
-## Goal
+## 1. Project Purpose
 
-Use a safe workflow:
+The goal is to keep the repository professional, easy to review, and simple to understand during a portfolio walkthrough.
 
-1. feature branches merge into dev
-2. dev is the integration and validation branch
-3. dev merges into main only when stable
+I use three branch layers:
 
-## Before You Start
+1. `feature/*` for isolated work.
+2. `dev` for integration and validation.
+3. `main` for reviewed and approved code.
 
-Make sure these branches already exist in GitHub:
+## 2. Branch Strategy
 
-- main
-- dev
+The branch flow is:
+
+1. Create a feature branch from `dev`.
+2. Build and test changes on the feature branch.
+3. Open a pull request from the feature branch into `dev`.
+4. Review the PR and wait for checks to pass.
+5. Merge the feature branch into `dev`.
+6. When `dev` is stable, open a pull request from `dev` into `main`.
+7. Merge `dev` into `main` only after approvals and checks.
+
+Important rule:
+
+- Do not push directly to `main`.
+- `main` must remain protected so every change goes through a pull request.
+
+## 3. Repository Setup Before Rulesets
+
+Before creating GitHub rulesets, confirm that these branches exist in GitHub:
+
+- `main`
+- `dev`
 
 If they do not exist yet, create and push them locally first.
 
-## Create Ruleset for dev Branch
+## 4. Create the `dev` Ruleset
 
-1. Open your repository in GitHub.
-2. Go to Settings.
-3. Open Rules, then Rulesets.
-4. Click New branch ruleset.
-5. Set Ruleset Name to dev protection.
-6. Keep Enforcement status as Active.
-7. Leave Bypass list empty.
+I would configure `dev` as the active development branch.
 
-### Target Branch
+### 4.1 Open the Ruleset Page
 
-1. In Target branches, click Add target.
-2. Choose Include by pattern.
-3. Type dev.
+1. Open the repository in GitHub.
+2. Go to `Settings`.
+3. Open `Rules` and then `Rulesets`.
+4. Click `New branch ruleset`.
+
+### 4.2 Basic Settings
+
+1. Set `Ruleset Name` to `dev protection`.
+2. Keep `Enforcement status` as `Active`.
+3. Leave `Bypass list` empty unless you have a specific reason to allow exemptions.
+
+### 4.3 Target Branch
+
+1. In `Target branches`, click `Add target`.
+2. Choose `Include by pattern`.
+3. Type `dev`.
 4. Save the target.
 
-### Rules to Enable for dev
+### 4.4 Rules for `dev`
 
-Enable these options:
+Enable these rules for the `dev` branch:
 
 - Require a pull request before merging
 - Block force pushes
 - Restrict deletions
 
-Recommended for better quality:
+Recommended quality rule:
 
 - Require status checks to pass
 
-Important note:
+If GitHub shows the message that required checks cannot be empty, temporarily disable the rule, save the ruleset, run one PR to generate checks, and then edit the ruleset again to add the check.
 
-If GitHub says required checks cannot be empty, disable this option temporarily, save the ruleset, run one PR to generate checks, then edit the ruleset and add the check name.
+![Required status checks cannot be empty](images/01-status-check-error.png)
 
-### Pull Request Details for dev
+Caption: GitHub warning shown when status checks are required but none have been selected yet.
 
-Inside the pull request rule, recommended values:
+### 4.5 Pull Request Settings for `dev`
 
-- Minimum approvals: 1
-- Require conversation resolution before merging: On
-- Dismiss stale pull request approvals when new commits are pushed: Optional
+Inside the pull request rule, I recommend:
 
-## Create Ruleset for main Branch
+- Minimum approvals: `1`
+- Require conversation resolution before merging: `On`
+- Dismiss stale pull request approvals when new commits are pushed: `Optional`
+
+## 5. Create the `main` Ruleset
+
+I would configure `main` as the protected release branch.
+
+### 5.1 Target Branch
 
 1. Create another branch ruleset.
-2. Ruleset Name: main protection.
-3. Target branch pattern: main.
+2. Set `Ruleset Name` to `main protection`.
+3. Set the target branch pattern to `main`.
 
-Enable these options:
+![Main branch target configuration](images/02-main-branch-target.png)
+
+Caption: Example of the `main` branch being selected as the protected target.
+
+### 5.2 Rules for `main`
+
+Enable these rules for `main`:
 
 - Require a pull request before merging
 - Require status checks to pass
@@ -74,125 +112,186 @@ Enable these options:
 - Block force pushes
 - Restrict deletions
 
-Recommended for main:
+Recommended approvals for `main`:
 
-- Minimum approvals: 1 or 2
+- Minimum approvals: `1` or `2`
 
-## Set Default Branch
+## 6. Set the Default Branch
 
-1. Go to Settings, then Branches.
-2. Set Default branch to main.
+1. Go to `Settings`.
+2. Open `Branches`.
+3. Set the default branch to `main`.
 
-## Working Model
+## 7. Local Command Workflow
 
-## Branch Workflow
+This is the workflow I would follow in the terminal when building the project.
 
-Use this standard workflow for all new work:
+```powershell
+# Start from dev and create a feature branch
+git checkout dev
+git pull origin dev
+git checkout -b feature/first_branch
 
-1. Create a feature branch from dev.
-2. Make your changes in the feature branch.
-3. Open a pull request from the feature branch into dev.
-4. Review the pull request and wait for checks to pass.
-5. Merge the feature branch into dev.
-6. When dev is stable, open a pull request from dev into main.
-7. Merge dev into main only after all checks pass.
+# Run dbt checks before committing
+$env:SNOWFLAKE_ACCOUNT='<account>'
+$env:SNOWFLAKE_USER='<user>'
+$env:SNOWFLAKE_PASSWORD='<password>'
+$env:SNOWFLAKE_ROLE='ACCOUNTADMIN'
+$env:SNOWFLAKE_WAREHOUSE='COMPUTE_WH'
+$env:SNOWFLAKE_DATABASE='MARKET_INTELLIGENCE_DB'
+$env:SNOWFLAKE_SCHEMA='CORE'
+$env:DBT_TARGET='dev'
+dbt debug --project-dir dbt --profiles-dir dbt
+dbt run --project-dir dbt --profiles-dir dbt
 
-Important rule:
+# Commit and push the feature branch
+git add .
+git commit -m "first branch configuration"
+git push origin feature/first_branch
 
-- Do not push directly to main.
-- main should be protected so changes enter only through pull requests.
+# Open a pull request from feature/first_branch into dev
+# After dev is stable, merge dev into main through a pull request
+```
 
-Daily development:
+![Feature branch push example](images/03-feature-branch-push-example.png)
 
-1. Create feature branch from dev.
-2. Open PR from feature branch to dev.
-3. Merge after checks and review.
+Caption: Example of a feature branch being pushed after the workflow is set up and validated.
 
-Release promotion:
+Important notes:
 
-1. Open PR from dev to main.
-2. Merge after all checks pass.
+- Replace placeholder values with your real environment values.
+- Do not commit passwords or tokens into the repository.
+- Keep `main` protected and use pull requests for every merge.
 
-## Suggested Branch Names
+## 8. Git and GitHub Command Reference
 
-- feature/github-ingestion
-- feature/new-kpi-model
-- fix/dbt-schema-bug
-- chore/readme-update
+This section collects the commands I use most often when managing branches, syncing with GitHub, and preparing pull requests.
 
-## Common Errors and Fixes
+### 8.1 Check the Repository State
 
-Error: Repository not found
+```powershell
+git status
+git branch
+git branch -a
+git remote -v
+```
 
-- Verify remote URL owner and repository name.
-- Verify repository exists in GitHub web.
+Use these commands to see:
+
+- which branch you are on,
+- what files changed,
+- which branches exist locally and remotely,
+- which GitHub remote is configured.
+
+### 8.2 Create and Switch Branches
+
+```powershell
+git checkout dev
+git pull origin dev
+git checkout -b feature/first_branch
+```
+
+Use this flow when starting new work from `dev`.
+
+### 8.3 Save and Push Changes
+
+```powershell
+git add .
+git commit -m "feature: describe the change"
+git push origin feature/first_branch
+```
+
+Use this flow after finishing a feature branch change.
+
+### 8.4 Pull the Latest Changes
+
+```powershell
+git checkout dev
+git pull origin dev
+```
+
+```powershell
+git checkout main
+git pull origin main
+```
+
+Use `git pull` before starting new work so your branch is updated.
+
+### 8.5 Merge Workflow Between Branches
+
+Recommended branch flow:
+
+1. `feature/*` into `dev`
+2. `dev` into `main`
+
+Important:
+
+- Merge through pull requests in GitHub.
+- Avoid direct pushes to `main`.
+- Keep `dev` as the integration branch.
+
+### 8.6 Pull Request Workflow
+
+1. Push your feature branch to GitHub.
+2. Open a pull request from `feature/first_branch` into `dev`.
+3. Wait for CI checks to pass.
+4. Merge the pull request.
+5. When `dev` is stable, open a pull request from `dev` into `main`.
+
+### 8.7 Reconnect the Remote If Needed
+
+```powershell
+git remote -v
+git remote set-url origin https://github.com/EnriqueAparicio/Market_Intelligence_Platform.git
+```
+
+Use this if the remote URL is wrong or you need to verify the GitHub connection.
+
+### 8.8 Useful Commands for Daily Work
+
+```powershell
+git log --oneline --graph --decorate --all
+git diff
+git diff --staged
+git stash
+git stash pop
+```
+
+These commands help you review history, inspect changes, and temporarily store unfinished work.
+
+## 9. Suggested Branch Names
+
+- `feature/github-ingestion`
+- `feature/new-kpi-model`
+- `fix/dbt-schema-bug`
+- `chore/readme-update`
+
+## 10. Common Errors and Fixes
+
+### Error: Repository Not Found
+
+- Verify the remote URL owner and repository name.
+- Verify the repository exists in GitHub web.
 - Verify authentication is valid.
 
-Error: Required status checks cannot be empty
+### Error: Required Status Checks Cannot Be Empty
 
 - Save without required checks.
 - Run one pull request with Actions.
-- Edit ruleset and add actual check names.
+- Edit the ruleset and add actual check names.
 
-Error: No checks available in list
+### Error: No Checks Available in the List
 
 - Trigger GitHub Actions by pushing a commit or opening a PR.
-- Return to ruleset and select the check.
+- Return to the ruleset and select the check.
 
-## Quick Verification Checklist
+## 11. Quick Verification Checklist
 
-- main and dev exist in GitHub
-- main is default branch
-- main ruleset exists and is active
-- dev ruleset exists and is active
-- force push blocked on main and dev
-- pull requests required on main and dev
-- status checks required where configured
+- `main` and `dev` exist in GitHub
+- `main` is the default branch
+- `main` ruleset exists and is active
+- `dev` ruleset exists and is active
+- Force push is blocked on `main` and `dev`
+- Pull requests are required on `main` and `dev`
+- Status checks are required where configured
 
-## How to Send Screenshots for Faster Help
-
-If you need support while configuring GitHub settings, you can send a screenshot and I will guide you step by step.
-
-For best results, include these details in the screenshot:
-
-- Full page header so I can identify the exact GitHub section.
-- The selected options or toggles currently enabled.
-- Any visible warning or error message text.
-- The URL path shown in the browser (if possible).
-
-When sharing the screenshot, add a short message with:
-
-1. What you expected to happen.
-2. What actually happened.
-3. Which branch you are configuring (`main` or `dev`).
-
-This helps me give precise instructions without trial and error.
-
-## Example Screenshots in Documentation
-
-You can embed screenshots directly in this guide.
-
-1. Save the image under `docs/github/images/`.
-2. Use descriptive file names with numeric prefixes.
-3. Add a short caption under each image.
-
-### Example: Status Check Error
-
-![Required status checks cannot be empty](images/Captura%20de%20pantalla%202026-08-06%20005036.png)
-
-Caption: GitHub ruleset validation error when `Require status checks to pass` is enabled without selecting at least one check.
-
-### Example: Target Branch Pattern
-
-![Main branch ruleset target configuration](images/Captura%20de%20pantalla%202026-08-06%20005119.png)
-
-Caption: Active ruleset example showing `main` configured in the branch targeting criteria.
-
-### Example: Required Checks Selected
-
-If no checks are listed yet, run one pull request so GitHub Actions creates check runs, then return to the ruleset and add them.
-
-### Notes
-
-- Paths are relative to `docs/github/BRANCH_RULESETS_GUIDE.md`.
-- GitHub and VS Code Markdown preview will render these images automatically.

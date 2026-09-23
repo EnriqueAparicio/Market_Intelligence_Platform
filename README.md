@@ -35,17 +35,17 @@ pytest
 
 ## Environment Variables
 
-Base variables are defined in `.env.example`.
+Connection variables are defined in `dbt/profiles.yml.example`.
 
 - GitHub: `GITHUB_OWNER`, `GITHUB_REPOSITORY`, `GITHUB_BRANCH`
-- Snowflake: `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PASSWORD`, `SNOWFLAKE_ROLE`, `SNOWFLAKE_WAREHOUSE`, `SNOWFLAKE_DATABASE`, `SNOWFLAKE_SCHEMA`
+- Snowflake: `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_AUTHENTICATOR`, `SNOWFLAKE_ROLE`, `SNOWFLAKE_WAREHOUSE`, `SNOWFLAKE_DATABASE`, `SNOWFLAKE_SCHEMA`
 
 ## Project Snowflake Storage
 
 Provisioned structure:
 
-- Database: `MARKET_INTELLIGENCE_DB`
-- Schemas: `CORE`, `RAW`, `STAGING`, `MART`
+- Database: `SNOWFLAKE_SAMPLE_DATA`
+- Schema: `PUBLIC`
 - Initial ingestion stage: `MARKET_INTELLIGENCE_DB.RAW.GITHUB_STAGE`
 - Base tables:
 

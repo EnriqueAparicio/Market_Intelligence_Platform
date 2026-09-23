@@ -51,10 +51,10 @@ Snowflake layers:
 Required variables:
 
 - GitHub: `GITHUB_OWNER`, `GITHUB_REPOSITORY`, `GITHUB_BRANCH`
-- Snowflake: `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PASSWORD`, `SNOWFLAKE_ROLE`, `SNOWFLAKE_WAREHOUSE`, `SNOWFLAKE_DATABASE`, `SNOWFLAKE_SCHEMA`
+- Snowflake: `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_AUTHENTICATOR`, `SNOWFLAKE_ROLE`, `SNOWFLAKE_WAREHOUSE`, `SNOWFLAKE_DATABASE`, `SNOWFLAKE_SCHEMA`
 - dbt: `DBT_TARGET`
 
-Template file: `.env.example`.
+Template file: `dbt/profiles.yml.example`.
 
 ## 6. Python Component
 
@@ -88,7 +88,6 @@ Configuration:
 
 Current pipeline:
 
-- `ruff check .`
 - `pytest`
 
 Current tests:
@@ -103,7 +102,6 @@ Current tests:
 ```bash
 pip install -r requirements.txt
 pytest
-ruff check .
 dbt debug --project-dir dbt --profiles-dir dbt
 dbt run --project-dir dbt --profiles-dir dbt
 dbt test --project-dir dbt --profiles-dir dbt

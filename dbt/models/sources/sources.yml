@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: raw
-    database: "{{ env_var('SNOWFLAKE_DATABASE', 'MARKET_INTELLIGENCE_DB') }}"
+    database: "{{ env_var('SNOWFLAKE_DATABASE', 'SNOWFLAKE_SAMPLE_DATA') }}"
     schema: RAW
     tables:
       - name: GITHUB_REPOSITORY_SNAPSHOT

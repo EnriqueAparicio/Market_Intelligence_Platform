@@ -39,6 +39,7 @@ class SnowflakeConfig:
     warehouse: str
     database: str
     schema: str
+    authenticator: str = "externalbrowser"
 
     @classmethod
     def from_env(cls) -> "SnowflakeConfig":
@@ -48,22 +49,23 @@ class SnowflakeConfig:
             password=os.getenv("SNOWFLAKE_PASSWORD", ""),
             role=os.getenv("SNOWFLAKE_ROLE", "ACCOUNTADMIN"),
             warehouse=os.getenv("SNOWFLAKE_WAREHOUSE", "COMPUTE_WH"),
-            database=os.getenv("SNOWFLAKE_DATABASE", "MARKET_INTELLIGENCE_DB"),
-            schema=os.getenv("SNOWFLAKE_SCHEMA", "CORE"),
+            database=os.getenv("SNOWFLAKE_DATABASE", "SNOWFLAKE_SAMPLE_DATA"),
+            schema=os.getenv("SNOWFLAKE_SCHEMA", "PUBLIC"),
+            authenticator=os.getenv("SNOWFLAKE_AUTHENTICATOR", "externalbrowser"),
         )
 
     def is_configured(self) -> bool:
-        return all(
-            [
-                self.account,
-                self.user,
-                self.password,
-                self.role,
-                self.warehouse,
-                self.database,
-                self.schema,
-            ]
-        )
+        required_values = [
+            self.account,
+            self.user,
+            self.role,
+            self.warehouse,
+            self.database,
+            self.schema,
+            self.authenticator,
+        ]
+        credentials_configured = self.authenticator == "externalbrowser" or bool(self.password)
+        return all(required_values) and credentials_configured
 
 
 @dataclass(frozen=True, slots=True)

@@ -135,11 +135,11 @@ git checkout -b feature/first_branch
 # Run dbt checks before committing
 $env:SNOWFLAKE_ACCOUNT='<account>'
 $env:SNOWFLAKE_USER='<user>'
-$env:SNOWFLAKE_PASSWORD='<password>'
+$env:SNOWFLAKE_AUTHENTICATOR='externalbrowser'
 $env:SNOWFLAKE_ROLE='ACCOUNTADMIN'
 $env:SNOWFLAKE_WAREHOUSE='COMPUTE_WH'
-$env:SNOWFLAKE_DATABASE='MARKET_INTELLIGENCE_DB'
-$env:SNOWFLAKE_SCHEMA='CORE'
+$env:SNOWFLAKE_DATABASE='SNOWFLAKE_SAMPLE_DATA'
+$env:SNOWFLAKE_SCHEMA='PUBLIC'
 $env:DBT_TARGET='dev'
 dbt debug --project-dir dbt --profiles-dir dbt
 dbt run --project-dir dbt --profiles-dir dbt

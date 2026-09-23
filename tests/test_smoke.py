@@ -44,3 +44,18 @@ def test_snowflake_is_configured_when_all_values_exist() -> None:
     )
 
     assert snowflake.is_configured() is True
+
+
+def test_snowflake_externalbrowser_does_not_require_password() -> None:
+    snowflake = SnowflakeConfig(
+        account="account",
+        user="user",
+        password="",
+        role="role",
+        warehouse="warehouse",
+        database="database",
+        schema="schema",
+        authenticator="externalbrowser",
+    )
+
+    assert snowflake.is_configured() is True
